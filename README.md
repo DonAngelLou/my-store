@@ -1,41 +1,148 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛍️ **Men's Fashion E-commerce Web App**
 
-## Getting Started
+This is a sophisticated and modern e-commerce web application built using **Next.js** and **TypeScript** with **Tailwind CSS** for styling, **Shadcn** for UI components, and **Framer Motion** for animations. The app interacts with **FakeStoreAPI** to simulate product listings, with features such as product search, category filtering, and a shopping cart system.
 
-First, run the development server:
+![Project Preview](path-to-your-preview-image) <!-- You can add a screenshot of your project -->
+
+## 🎯 **Key Features**
+
+- 🛒 **Product Listing & Filtering**: View products by categories, price range, and availability.
+- 💳 **Add to Cart**: Add items to your cart, adjust quantities, and remove items.
+- 📝 **Product Details**: View detailed descriptions, reviews, and specifications of each product in a modal dialog.
+- 💬 **Real-time Animations**: Fluid animations for user interactions using **Framer Motion**.
+- 📱 **Mobile Responsive**: The app is fully responsive across different screen sizes.
+- 🌍 **Internationalization Ready**: Easily adaptable for multi-language support.
+
+## 🧰 **Tech Stack**
+
+- **Next.js**: A React framework for production, providing server-side rendering and static site generation.
+- **TypeScript**: Strongly typed language to build more robust and scalable applications.
+- **Tailwind CSS**: Utility-first CSS framework for rapidly building custom designs.
+- **Shadcn UI**: A headless component library for fast and consistent UI development.
+- **Framer Motion**: A powerful library for creating smooth animations.
+- **SwiperJS**: Modern touch slider for mobile devices.
+- **Axios**: Promise-based HTTP client for API requests.
+- **FakeStoreAPI**: A free API for e-commerce data (used for product simulation).
+
+## 📦 **Libraries Used**
+
+| Library      | Purpose                                                             | Documentation Link                                     |
+| ------------ | ------------------------------------------------------------------- | ----------------------------------------------------- |
+| **Next.js**  | React framework for server-side rendering and static site generation | [Next.js Docs](https://nextjs.org/docs)               |
+| **TypeScript** | Typed JavaScript for better code quality                          | [TypeScript Docs](https://www.typescriptlang.org/docs/)|
+| **TailwindCSS** | CSS framework for building responsive and custom UIs            | [Tailwind Docs](https://tailwindcss.com/docs)          |
+| **Shadcn UI**  | Component library for headless UI                                 | [Shadcn Docs](https://shadcn.dev/docs)                |
+| **Framer Motion** | Animation library for React apps                              | [Framer Motion Docs](https://www.framer.com/motion/)  |
+| **SwiperJS**  | Touch-enabled slider component for mobile                          | [SwiperJS Docs](https://swiperjs.com/)                |
+| **Axios**     | Promise-based HTTP client for API requests                         | [Axios Docs](https://axios-http.com/)                 |
+| **FakeStoreAPI** | E-commerce product and category simulation                     | [FakeStoreAPI](https://fakestoreapi.com/)             |
+
+## 🏗️ **Project Structure**
+
+```bash
+src/
+|-- app/
+|   |-- shop/
+|   |   |-- page.tsx                  # Shop page with product filtering and listing
+|   |-- layout.tsx                    # Main layout for the application
+|   |-- page.tsx                      # Landing page
+|-- components/
+|   |-- ProductCard.tsx               # Component for displaying individual product cards
+|   |-- ProductDetailsDialog.tsx      # Modal for product details with image slider and descriptions
+|-- context/
+|   |-- CartContext.tsx               # Context for managing the shopping cart state
+|   |-- UserContext.tsx               # Context for managing user authentication and session state
+|-- utils/
+|   |-- api.ts                        # API calls to fetch products and other data from FakeStoreAPI
+|-- styles/
+|   |-- globals.css                   # Global styles for the project
+|-- pages/
+|   |-- api/                          # API routes for handling product and cart operations
+|-- public/
+|   |-- images/                       # Public images used in the app (e.g., logo, banners)
+```
+
+## 🚀 **Installation and Setup**
+
+To run this project locally, follow these steps:
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/mens-fashion-ecommerce.git
+cd mens-fashion-ecommerce
+```
+
+### 2. Install dependencies
+
+Use **npm** or **yarn** to install the required libraries and dependencies:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file in the root of your project and add the necessary environment variables for **NextAuth** or any other third-party services:
+
+```bash
+NEXTAUTH_SECRET=your-next-auth-secret
+NEXT_PUBLIC_API_BASE_URL=https://fakestoreapi.com
+```
+
+### 4. Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5. Build for production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+# or
+yarn build
+```
 
-## Learn More
+## 🛠️ **Available Scripts**
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev`: Runs the development server.
+- `npm run build`: Builds the app for production.
+- `npm run lint`: Lints the codebase to maintain code quality.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📖 **Functionality Overview**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. **Product Listing and Filters**
+   - Fetches product data from **FakeStoreAPI** and displays them in the `Shop` page.
+   - Users can filter products based on categories, price range, and rating.
 
-## Deploy on Vercel
+### 2. **Product Details Modal**
+   - Opens a modal with detailed product information, including a SwiperJS slider for product images.
+   - Users can view product descriptions, reviews, and specifications.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. **Add to Cart Functionality**
+   - Users can add items to their cart from the product listing or details modal.
+   - Cart items are managed using `CartContext` for persistent state.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# my-store
-Codebility Project 4
->>>>>>> a7d575b2b26f0265e83b42c71365af74acef7051
+### 4. **Responsive Design**
+   - The entire application is responsive, using **Tailwind CSS** to ensure a great experience on mobile, tablet, and desktop screens.
+
+### 5. **Animations with Framer Motion**
+   - Smooth animations for elements such as buttons, modals, and image zoom on hover, powered by **Framer Motion**.
+
+## 🧪 **Testing**
+
+To test the functionality of the app:
+
+- Ensure that the development server is running.
+- Navigate through the pages and interact with the product listings, modals, and cart.
+
+## 📄 **License**
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
