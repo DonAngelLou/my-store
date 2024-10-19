@@ -1,20 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useCart } from '@/context/CartContext';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion'; 
+import { motion } from 'framer-motion';
+
+// Define the CartItem type
+type CartItem = {
+  id: number;
+  title: string;
+  price: number;
+  quantity: number;
+  image: string;
+};
 
 const Checkout = () => {
-  const { cart, clearCart } = useCart();
   const router = useRouter();
+  const [cart, setCart] = useState<CartItem[]>([]); // Type set to CartItem[]
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
+
+  // Retrieve cart from localStorage
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cartItems');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
 
   const [shippingDetails, setShippingDetails] = useState({
     name: '',
@@ -30,14 +43,16 @@ const Checkout = () => {
     cvv: '',
   });
 
+  // Calculate the total price
   const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  // Handle form inputs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'shipping' | 'payment') => {
     const { name, value } = e.target;
 
     if (type === 'shipping') {
       setShippingDetails((prev) => ({ ...prev, [name]: value }));
-    } else if (type === 'payment') {
+    } else {
       setPaymentDetails((prev) => ({ ...prev, [name]: value }));
     }
 
@@ -54,6 +69,7 @@ const Checkout = () => {
     }
   };
 
+  // Validate fields
   const validateFields = () => {
     const validationErrors: Record<string, string> = {};
 
@@ -75,37 +91,27 @@ const Checkout = () => {
     return Object.keys(validationErrors).length === 0;
   };
 
-  const handlePlaceOrder = () => {
-    if (validateFields()) {
-      setIsLoading(true);
-      setPaymentStatus(null);
-
-      setTimeout(() => {
-        const paymentSuccess = Math.random() > 0.3;
-
-        if (paymentSuccess) {
-          setPaymentStatus('Payment successful! Your order has been placed.');
-          clearCart();
-          setTimeout(() => {
-            setIsLoading(false);
-            router.push('/confirmation');
-          }, 2000);
-        } else {
-          setPaymentStatus('Payment failed. Please try again.');
-          setIsLoading(false);
-        }
-      }, 3000);
-    }
-  };
-
+  // Proceed to the next step
   const handleNextStep = () => {
     if (validateFields()) {
       setCurrentStep(currentStep + 1);
     }
   };
 
+  // Go back to the previous step
   const handlePreviousStep = () => {
     setCurrentStep(currentStep - 1);
+  };
+
+  // Move to confirmation page without placing the order here
+  const handleConfirm = () => {
+    // Save shipping and payment details in localStorage for the confirmation page
+    localStorage.setItem('shippingDetails', JSON.stringify(shippingDetails));
+    localStorage.setItem('paymentDetails', JSON.stringify(paymentDetails));
+    localStorage.setItem('totalPrice', totalPrice.toFixed(2));
+
+    // Move to the confirmation page
+    router.push('/confirmation');
   };
 
   if (cart.length === 0) {
@@ -113,7 +119,12 @@ const Checkout = () => {
   }
 
   return (
-    <motion.div className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+    <motion.div
+      className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <h2 className="text-3xl font-semibold text-gray-800 mb-4 text-center">Checkout</h2>
 
       {/* Error Display */}
@@ -228,8 +239,8 @@ const Checkout = () => {
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button onClick={handleNextStep} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md">
-                Next: Review Order
+              <Button onClick={handleConfirm} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md">
+                Confirm and Review Order
               </Button>
             </motion.div>
           </div>
@@ -258,29 +269,8 @@ const Checkout = () => {
                 Back
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button onClick={handlePlaceOrder} className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing Payment...
-                  </>
-                ) : (
-                  'Place Order'
-                )}
-              </Button>
-            </motion.div>
+            {/* The place order button will now be removed from here */}
           </div>
-
-          {paymentStatus && (
-            <motion.div
-              className={`mt-4 text-center text-lg font-semibold ${paymentStatus.includes('failed') ? 'text-red-500' : 'text-green-500'}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              {paymentStatus}
-            </motion.div>
-          )}
         </motion.div>
       )}
     </motion.div>

@@ -1,25 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button'; 
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 
 const CartPage = () => {
   const { cart, removeFromCart, updateCartItemQuantity, clearCart } = useCart();
-  const router = useRouter(); 
+  const router = useRouter();
 
-  // Calculate cart totals
+  // Store cart data in localStorage
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cart));
+  }, [cart]);
+
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = subtotal * 0.07; 
+  const tax = subtotal * 0.07;
   const total = subtotal + tax;
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
 
   return (
     <div className="container mx-auto p-6">
@@ -29,22 +27,9 @@ const CartPage = () => {
         <p className="text-gray-500">Your cart is empty.</p>
       ) : (
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Cart Items */}
-          <motion.div
-            className="flex-1"
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            transition={{ duration: 0.5, staggerChildren: 0.1 }}
-          >
+          <div className="flex-1">
             {cart.map((item) => (
-              <motion.div
-                key={item.id}
-                className="flex justify-between items-center mb-6 border-b pb-4"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
+              <div key={item.id} className="flex justify-between items-center mb-6 border-b pb-4">
                 <div className="flex items-center gap-4">
                   <Image src={item.image} alt={item.title} width={80} height={80} className="rounded" />
                   <div>
@@ -58,36 +43,22 @@ const CartPage = () => {
                         className="w-16 p-2 border rounded"
                         min={1}
                       />
-                      {/* Using Shadcn Button with motion */}
-                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                        <Button
-                          className="ml-4 bg-red-500 hover:bg-red-600 text-white"
-                          onClick={() => removeFromCart(item.id)}
-                        >
-                          Remove
-                        </Button>
-                      </motion.div>
+                      <Button className="ml-4 bg-red-500 hover:bg-red-600 text-white" onClick={() => removeFromCart(item.id)}>
+                        Remove
+                      </Button>
                     </div>
                   </div>
                 </div>
                 <p className="font-bold">${(item.price * item.quantity).toFixed(2)}</p>
-              </motion.div>
+              </div>
             ))}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button className="bg-red-600 hover:bg-red-700 text-white mt-4" onClick={clearCart}>
-                Clear Cart
-              </Button>
-            </motion.div>
-          </motion.div>
+            <Button className="bg-red-600 hover:bg-red-700 text-white mt-4" onClick={clearCart}>
+              Clear Cart
+            </Button>
+          </div>
 
           {/* Cart Summary */}
-          <motion.div
-            className="bg-gray-100 p-6 rounded-lg shadow-lg w-full lg:w-1/3"
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            transition={{ delay: 0.5 }}
-          >
+          <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full lg:w-1/3">
             <h2 className="text-xl font-bold mb-4">Cart Summary</h2>
             <div className="flex justify-between mb-2">
               <p>Subtotal</p>
@@ -101,15 +72,13 @@ const CartPage = () => {
               <p>Total</p>
               <p>${total.toFixed(2)}</p>
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full mt-6"
-                onClick={() => router.push('/checkout')} // Add navigation to checkout
-              >
-                Proceed to Checkout
-              </Button>
-            </motion.div>
-          </motion.div>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full mt-6"
+              onClick={() => router.push('/checkout')}
+            >
+              Proceed to Checkout
+            </Button>
+          </div>
         </div>
       )}
     </div>

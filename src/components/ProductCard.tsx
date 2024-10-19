@@ -33,7 +33,7 @@ type Product = {
   stock: number;
 };
 
-// Product details modal
+// Product details modal with fixed size
 const ProductDetailsDialog = ({
   product,
   isOpen,
@@ -45,7 +45,7 @@ const ProductDetailsDialog = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="p-6 bg-gradient-to-tr from-gray-900 to-gray-800 text-white rounded-lg shadow-lg">
+      <DialogContent className="p-6 bg-gradient-to-tr from-gray-900 to-gray-800 text-white rounded-lg shadow-lg max-w-[800px] w-full max-h-[90vh] overflow-auto">
         <DialogHeader>
           <h2 className="text-2xl font-bold mb-4">{product.title}</h2>
         </DialogHeader>
@@ -91,11 +91,10 @@ const ProductCard = () => {
       try {
         const fetchedProducts = await getMenProducts();
 
-        
         const updatedProducts = fetchedProducts.map((product) => ({
           ...product,
-          stock: product.rating.count, 
-          available: product.rating.count > 0, 
+          stock: product.rating.count,
+          available: product.rating.count > 0,
         }));
 
         setProducts(updatedProducts);
@@ -108,6 +107,9 @@ const ProductCard = () => {
     }
     fetchProducts();
   }, []);
+
+  // Get unique categories from products for the filter dropdown
+  const categories = Array.from(new Set(products.map((product) => product.category)));
 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
@@ -168,6 +170,32 @@ const ProductCard = () => {
     }
   };
 
+  // Reset the pagination to page 1 whenever a filter option is changed
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    setCurrentPage(1);
+  };
+
+  const handleMinPriceChange = (value: number) => {
+    setMinPrice(value);
+    setCurrentPage(1);
+  };
+
+  const handleMaxPriceChange = (value: number) => {
+    setMaxPrice(value);
+    setCurrentPage(1);
+  };
+
+  const handleMinRatingChange = (value: string) => {
+    setMinRating(Number(value));
+    setCurrentPage(1);
+  };
+
+  const handleAvailabilityChange = (value: string) => {
+    setAvailability(value);
+    setCurrentPage(1);
+  };
+
   if (loading) {
     return <div className="text-center py-10 text-gray-600">Loading products...</div>;
   }
@@ -183,67 +211,82 @@ const ProductCard = () => {
       {/* Filters and Sorting */}
       <div className="mb-8 flex flex-wrap justify-between gap-6 p-4 bg-gradient-to-r from-blue-800 to-black rounded-lg shadow-lg">
         {/* Category filter */}
-        <Select onValueChange={setCategory}>
-          <SelectTrigger className="w-[200px] bg-gray-800 text-white shadow-md rounded-md">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent className="bg-gray-700 text-white">
-            <SelectGroup>
-              <SelectLabel>Category</SelectLabel>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="men's clothing">Men&apos;s Apparel</SelectItem>
-              <SelectItem value="jewelery">Accessories</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col w-[200px]">
+          <label className="text-white mb-2">Filter by Category</label>
+          <Select onValueChange={handleCategoryChange}>
+            <SelectTrigger className="bg-gray-800 text-white shadow-md rounded-md">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-700 text-white">
+              <SelectGroup>
+                <SelectLabel>Category</SelectLabel>
+                <SelectItem value="all">All</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Price filter */}
-        <div className="flex space-x-4">
-          <Input
-            type="number"
-            value={minPrice}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMinPrice(Number(e.target.value))}
-            placeholder="Min Price"
-            className="w-[100px] bg-gray-800 text-white shadow-md rounded-md"
-          />
-          <Input
-            type="number"
-            value={maxPrice}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMaxPrice(Number(e.target.value))}
-            placeholder="Max Price"
-            className="w-[100px] bg-gray-800 text-white shadow-md rounded-md"
-          />
+        <div className="flex flex-col space-y-2">
+          <label className="text-white">Filter by Price Range</label>
+          <div className="flex space-x-4">
+            <Input
+              type="number"
+              value={minPrice}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMinPriceChange(Number(e.target.value))}
+              placeholder="Min Price"
+              className="w-[100px] bg-gray-800 text-white shadow-md rounded-md"
+            />
+            <Input
+              type="number"
+              value={maxPrice}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMaxPriceChange(Number(e.target.value))}
+              placeholder="Max Price"
+              className="w-[100px] bg-gray-800 text-white shadow-md rounded-md"
+            />
+          </div>
         </div>
 
         {/* Rating filter */}
-        <Select onValueChange={(value: string) => setMinRating(Number(value))}>
-          <SelectTrigger className="w-[200px] bg-gray-800 text-white shadow-md rounded-md">
-            <SelectValue placeholder="Rating" />
-          </SelectTrigger>
-          <SelectContent className="bg-gray-700 text-white">
-            <SelectGroup>
-              <SelectLabel>Rating</SelectLabel>
-              <SelectItem value="0">All Ratings</SelectItem>
-              <SelectItem value="4">4 Stars & Up</SelectItem>
-              <SelectItem value="3">3 Stars & Up</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col w-[200px]">
+          <label className="text-white mb-2">Filter by Rating</label>
+          <Select onValueChange={handleMinRatingChange}>
+            <SelectTrigger className="bg-gray-800 text-white shadow-md rounded-md">
+              <SelectValue placeholder="Rating" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-700 text-white">
+              <SelectGroup>
+                <SelectLabel>Rating</SelectLabel>
+                <SelectItem value="0">All Ratings</SelectItem>
+                <SelectItem value="4">4 Stars & Up</SelectItem>
+                <SelectItem value="3">3 Stars & Up</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Availability filter */}
-        <Select onValueChange={setAvailability}>
-          <SelectTrigger className="w-[200px] bg-gray-800 text-white shadow-md rounded-md">
-            <SelectValue placeholder="Availability" />
-          </SelectTrigger>
-          <SelectContent className="bg-gray-700 text-white">
-            <SelectGroup>
-              <SelectLabel>Availability</SelectLabel>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="available">Available</SelectItem>
-              <SelectItem value="unavailable">Unavailable</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col w-[200px]">
+          <label className="text-white mb-2">Filter by Availability</label>
+          <Select onValueChange={handleAvailabilityChange}>
+            <SelectTrigger className="bg-gray-800 text-white shadow-md rounded-md">
+              <SelectValue placeholder="Availability" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-700 text-white">
+              <SelectGroup>
+                <SelectLabel>Availability</SelectLabel>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="unavailable">Unavailable</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Product Grid */}
@@ -263,7 +306,7 @@ const ProductCard = () => {
                   alt={product.title}
                   width={250}
                   height={250}
-                  className="cursor-pointer hover:scale-105 transition-transform rounded-lg object-cover w-full h-[250px]" // Adjusted size
+                  className="cursor-pointer hover:scale-105 transition-transform rounded-lg object-cover w-full h-[250px]"
                   onClick={() => handleProductClick(product)}
                 />
               </TooltipTrigger>
