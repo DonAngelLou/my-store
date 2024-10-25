@@ -17,7 +17,7 @@ type CartItem = {
 
 const Checkout = () => {
   const router = useRouter();
-  const [cart, setCart] = useState<CartItem[]>([]); // Type set to CartItem[]
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -43,8 +43,10 @@ const Checkout = () => {
     cvv: '',
   });
 
-  // Calculate the total price
-  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  // Calculate subtotal, tax, and total
+  const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const tax = subtotal * 0.07; // 7% tax rate
+  const totalPrice = subtotal + tax;
 
   // Handle form inputs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'shipping' | 'payment') => {
@@ -69,7 +71,6 @@ const Checkout = () => {
     }
   };
 
-  // Validate fields
   const validateFields = () => {
     const validationErrors: Record<string, string> = {};
 
@@ -91,26 +92,23 @@ const Checkout = () => {
     return Object.keys(validationErrors).length === 0;
   };
 
-  // Proceed to the next step
   const handleNextStep = () => {
     if (validateFields()) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  // Go back to the previous step
   const handlePreviousStep = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  // Move to confirmation page without placing the order here
   const handleConfirm = () => {
-    // Save shipping and payment details in localStorage for the confirmation page
     localStorage.setItem('shippingDetails', JSON.stringify(shippingDetails));
     localStorage.setItem('paymentDetails', JSON.stringify(paymentDetails));
+    localStorage.setItem('subtotal', subtotal.toFixed(2));
+    localStorage.setItem('tax', tax.toFixed(2));
     localStorage.setItem('totalPrice', totalPrice.toFixed(2));
 
-    // Move to the confirmation page
     router.push('/confirmation');
   };
 
@@ -119,12 +117,7 @@ const Checkout = () => {
   }
 
   return (
-    <motion.div
-      className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <motion.div className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md">
       <h2 className="text-3xl font-semibold text-gray-800 mb-4 text-center">Checkout</h2>
 
       {/* Error Display */}
@@ -256,10 +249,14 @@ const Checkout = () => {
               {cart.map((item) => (
                 <div key={item.id} className="flex justify-between border-b py-2">
                   <div>{item.title}</div>
-                  <div>${item.price} x {item.quantity}</div>
+                  <div>
+                    ${item.price} x {item.quantity}
+                  </div>
                 </div>
               ))}
             </div>
+            <div className="text-right font-bold mt-4 text-lg">Subtotal: ${subtotal.toFixed(2)}</div>
+            <div className="text-right font-bold mt-4 text-lg">Tax (7%): ${tax.toFixed(2)}</div>
             <div className="text-right font-bold mt-4 text-xl">Total: ${totalPrice.toFixed(2)}</div>
           </div>
 
@@ -269,7 +266,6 @@ const Checkout = () => {
                 Back
               </Button>
             </motion.div>
-            {/* The place order button will now be removed from here */}
           </div>
         </motion.div>
       )}

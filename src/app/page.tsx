@@ -4,58 +4,38 @@ import ProductCard from '../components/ProductCard';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useUser } from '@/context/UserContext'; 
-import { Button } from '@/components/ui/button'; 
-import { useState } from 'react';
+import { useUser } from '@/context/UserContext';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation'; // Import the useRouter for navigation
 
 export default function Home() {
-  const { user, login, signup, logout } = useUser(); 
-  const [error, setError] = useState<string | null>(null); 
-  const [isSignup, setIsSignup] = useState<boolean>(false); 
-  const [loading, setLoading] = useState(false); 
+  const { user, logout } = useUser(); // Removed login and signup as we will navigate to other pages
+  const router = useRouter(); // Initialize the router
 
-  const handleLogin = async () => {
-    try {
-      setError(null);
-      setLoading(true);
-      await login('user@example.com', 'password'); // Mock login
-      setLoading(false);
-    } catch {
-      setError('Invalid credentials');
-      setLoading(false);
-    }
+  const handleNavigateToLogin = () => {
+    router.push('/login'); // Redirect to the login page
   };
 
-  const handleSignup = async () => {
-    try {
-      setError(null);
-      setLoading(true);
-      await signup('newuser@example.com', 'newpassword'); // Mock signup
-      await login('newuser@example.com', 'newpassword'); // Log in after signup
-      setLoading(false);
-    } catch {
-      setError('Error during signup');
-      setLoading(false);
-    }
+  const handleNavigateToSignup = () => {
+    router.push('/signup'); // Redirect to the signup page
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-screen py-12 overflow-hidden">
-        
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/mens-fashion-hero.jpg"
             alt="Men's Apparel"
-            fill 
-            style={{ objectFit: 'cover', objectPosition: 'top' }} 
+            fill
+            style={{ objectFit: 'cover', objectPosition: 'top' }}
             quality={100}
             className="opacity-75"
           />
         </div>
 
-        <div className="absolute inset-0 bg-black opacity-40 z-0" /> 
+        <div className="absolute inset-0 bg-black opacity-40 z-0" />
 
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -70,36 +50,22 @@ export default function Home() {
             Explore premium men&apos;s apparel crafted for those who lead with strength and style.
           </p>
 
-          {/* Error message display */}
-          {error && <p className="text-red-500 mb-4">{error}</p>}
-
           {/* Conditionally render login/signup buttons if not logged in */}
           {!user ? (
             <div className="flex flex-col items-center space-y-4">
-              {!isSignup ? (
-                <Button
-                  onClick={handleLogin}
-                  className="bg-blue-600 text-white py-3 px-6 rounded-full shadow-md"
-                  disabled={loading}
-                >
-                  {loading ? 'Logging In...' : 'Log In'}
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleSignup}
-                  className="bg-gray-900 text-white py-3 px-6 rounded-full shadow-md"
-                  disabled={loading}
-                >
-                  {loading ? 'Signing Up...' : 'Sign Up with Email'}
-                </Button>
-              )}
-
-              <p
-                className="text-gray-400 underline cursor-pointer"
-                onClick={() => setIsSignup(!isSignup)}
+              <Button
+                onClick={handleNavigateToLogin} // Navigate to the login page
+                className="bg-blue-600 text-white py-3 px-6 rounded-full shadow-md"
               >
-                {isSignup ? 'Already have an account? Log in' : 'You do not have an account? Sign up'}
-              </p>
+                Log In
+              </Button>
+
+              <Button
+                onClick={handleNavigateToSignup} // Navigate to the signup page
+                className="bg-gray-900 text-white py-3 px-6 rounded-full shadow-md"
+              >
+                Sign Up with Email
+              </Button>
             </div>
           ) : (
             <>
@@ -136,7 +102,7 @@ export default function Home() {
             Featured Men&apos;s Collection
           </motion.h2>
 
-          <ProductCard /> 
+          <ProductCard />
 
           <div className="flex justify-center mt-12">
             <motion.div

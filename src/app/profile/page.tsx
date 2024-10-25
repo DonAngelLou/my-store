@@ -45,7 +45,7 @@ const Profile = () => {
         >
           {/* Profile Picture */}
           <Image
-            src="/profile-placeholder.jpg" 
+            src="/images/profile-placeholder.jpg" 
             alt="Profile Picture"
             width={128}
             height={128}

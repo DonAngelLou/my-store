@@ -24,12 +24,16 @@ const Confirmation = () => {
   const router = useRouter();
   const [orderSummary, setOrderSummary] = useState<OrderItem[]>([]);
   const [shippingDetails, setShippingDetails] = useState<ShippingDetails | null>(null);
+  const [subtotal, setSubtotal] = useState<number>(0);
+  const [tax, setTax] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   // Fetch data from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem('cartItems');
     const savedShippingDetails = localStorage.getItem('shippingDetails');
+    const savedSubtotal = localStorage.getItem('subtotal');
+    const savedTax = localStorage.getItem('tax');
     const savedTotalPrice = localStorage.getItem('totalPrice');
 
     // Retrieve and parse the order summary (cart items)
@@ -40,6 +44,16 @@ const Confirmation = () => {
     // Retrieve and parse the shipping details
     if (savedShippingDetails) {
       setShippingDetails(JSON.parse(savedShippingDetails));
+    }
+
+    // Retrieve and parse the subtotal
+    if (savedSubtotal) {
+      setSubtotal(parseFloat(savedSubtotal));
+    }
+
+    // Retrieve and parse the tax
+    if (savedTax) {
+      setTax(parseFloat(savedTax));
     }
 
     // Retrieve and parse the total price
@@ -56,6 +70,8 @@ const Confirmation = () => {
       date: new Date().toISOString(),
       orderSummary,
       shippingDetails,
+      subtotal: subtotal.toFixed(2),
+      tax: tax.toFixed(2),
       totalPrice: totalPrice.toFixed(2),
     };
 
@@ -110,7 +126,9 @@ const Confirmation = () => {
             </li>
           ))}
         </ul>
-        <div className="text-right font-bold mt-4">Total: ${totalPrice.toFixed(2)}</div>
+        <div className="text-right font-bold mt-4 text-lg">Subtotal: ${subtotal.toFixed(2)}</div>
+        <div className="text-right font-bold mt-4 text-lg">Tax: ${tax.toFixed(2)}</div>
+        <div className="text-right font-bold mt-4 text-xl">Total: ${totalPrice.toFixed(2)}</div>
       </div>
 
       {/* Shipping Information */}
