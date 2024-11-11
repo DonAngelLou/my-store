@@ -1,12 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 
 const SuccessPage = () => {
   const [orderNumber, setOrderNumber] = useState<number | null>(null);
   const { clearCart } = useCart();
+
+  const stableClearCart = useCallback(() => {
+    clearCart();
+  }, [clearCart]);
 
   useEffect(() => {
     // Check if order number exists in localStorage, otherwise generate and save a new one
@@ -20,13 +24,13 @@ const SuccessPage = () => {
     }
 
     // Clear the cart and relevant localStorage items only once after mounting
-    clearCart();
+    stableClearCart();
     localStorage.removeItem('cartItems');
     localStorage.removeItem('totalPrice');
     localStorage.removeItem('shippingDetails');
-
+    
     // Empty dependency array ensures this only runs once when the component mounts
-  }, []); // Removed clearCart from the dependency array to prevent infinite loop
+  }, [stableClearCart]); // Include stableClearCart as a dependency
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
