@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 // Define types for Cart Item
 export type CartItem = {
@@ -73,9 +73,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Clear Cart
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
-  };
+  }, []);
 
   return (
     <CartContext.Provider
