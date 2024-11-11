@@ -15,7 +15,7 @@ const Shop = () => {
         className="container mx-auto py-16 px-8"
       >
         {/* Page Heading */}
-        <h1 className="text-5xl font-bold mb-8 text-center">Shop Men's Apparel & Accessories</h1>
+        <h1 className="text-5xl font-bold mb-8 text-center">Shop Men&apos;s Apparel & Accessories</h1>
 
         {/* ProductCard handles its own data fetching and rendering */}
         <ProductCard />
